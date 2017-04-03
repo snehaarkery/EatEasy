@@ -33,21 +33,12 @@ local.properties
 # node.js
 #
 node_modules/
-coverage/
 npm-debug.log
 yarn-error.log
-
-# Secrets
-env.js
 
 # BUCK
 buck-out/
 \.buckd/
-android/app/libs
-android/keystores/debug.keystore
-
-#yarn
-yarn-error.log
 *.keystore
 
 # fastlane
@@ -60,8 +51,3 @@ yarn-error.log
 fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots
-
-# React Native bundles
-
-ios/PepperoniAppTemplate/main.jsbundle
-ios/PepperoniAppTemplate/main.jsbundle.meta

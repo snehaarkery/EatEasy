@@ -1,45 +1,91 @@
-import {Provider} from 'react-redux';
-import store from './src/redux/store';
-import AppViewContainer from './src/modules/AppViewContainer';
-import React, {Component} from 'react';
-import {AppRegistry, BackAndroid} from 'react-native';
-import * as NavigationStateActions from './src/modules/navigation/NavigationState';
+import React, { Component } from 'react';
+import {
+  AppRegistry,
+  Button,
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableHighlight,
+  View
+} from 'react-native';
+import axios from 'axios';
+import Camera from 'react-native-camera';
 
-class PepperoniAppTemplate extends Component {
-  componentWillMount() {
-    BackAndroid.addEventListener('hardwareBackPress', this.navigateBack);
-  }
+class BarcodeScanner extends Component {
+  constructor(props) {
+    super(props);
 
-  navigateBack() {
-    const navigationState = store.getState().get('navigationState');
-    const tabs = navigationState.get('tabs');
-    const tabKey = tabs.getIn(['routes', tabs.get('index')]).get('key');
-    const currentTab = navigationState.get(tabKey);
-
-    // if we are in the beginning of our tab stack
-    if (currentTab.get('index') === 0) {
-
-      // if we are not in the first tab, switch tab to the leftmost one
-      if (tabs.get('index') !== 0) {
-        store.dispatch(NavigationStateActions.switchTab(0));
-        return true;
-      }
-
-      // otherwise let OS handle the back button action
-      return false;
+    this.state = {
+      showCamera: true,
+      cameraType: Camera.constants.Type.back,
+      barcodeData: {
+        data: '',
+        type: ''
+      },
+      ingredients: {}
     }
 
-    store.dispatch(NavigationStateActions.popRoute());
-    return true;
+    this._onBarCodeRead = this._onBarCodeRead.bind(this);
+  }
+
+  renderCamera() {
+    if (this.state.showCamera) {
+      return (
+        <Camera
+          ref="cam"
+          style={styles.container}
+          onBarCodeRead={this._onBarCodeRead}
+          type={this.state.cameraType}
+        />
+      );
+    } else {
+      return (
+        <View>
+          <Button
+            onPress={() => this.setState({ showCamera: true })}
+            title="Return to Scanner"
+            color="#841584"
+            accessibilityLabel="press this to return to the camera"
+          />
+          <Text>Type: {this.state.barcodeData.type}</Text>
+          <Text>Data: {this.state.barcodeData.data}</Text>
+          <Text>{JSON.stringify(this.state.ingredients)}</Text>
+        </View>
+      );
+    }
   }
 
   render() {
     return (
-      <Provider store={store}>
-        <AppViewContainer />
-      </Provider>
+      this.renderCamera()
     );
+  }
+
+  _onBarCodeRead(d) {
+    const api = 'http://eandata.com/feed/?v=3&keycode=DF7419BC58E1ED96&mode=json&find='
+
+    axios.get(api + d.data).then((res) => {
+      console.log(res);
+      this.setState({
+        ingredients: res
+      });
+    });
+
+    this.setState({
+      showCamera: false,
+      barcodeData: d,
+    });
+    console.log(d);
   }
 }
 
-AppRegistry.registerComponent('PepperoniAppTemplate', () => PepperoniAppTemplate);
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "transparent",
+  }
+});
+
+AppRegistry.registerComponent('EatEasy', () => BarcodeScanner);
