@@ -3,6 +3,7 @@ import {
   AppRegistry,
   Button,
   Dimensions,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableHighlight,
@@ -22,10 +23,21 @@ class BarcodeScanner extends Component {
         data: '',
         type: ''
       },
-      ingredients: {}
+      productInfo: null
     }
 
     this._onBarCodeRead = this._onBarCodeRead.bind(this);
+    this.renderCamera = this.renderCamera.bind(this);
+    this._renderProductInfo = this._renderProductInfo.bind(this);
+  }
+
+  _renderProductInfo() {
+    return Object.keys(this.state.productInfo.product.attributes)
+      .map((key) => {
+        return (
+          <Text key={key}>{key}: {this.state.productInfo.product.attributes[key]}</Text>
+        );
+      });
   }
 
   renderCamera() {
@@ -38,19 +50,33 @@ class BarcodeScanner extends Component {
           type={this.state.cameraType}
         />
       );
-    } else {
+    } else if (this.state.productInfo) {
       return (
-        <View>
+        <ScrollView>
           <Button
             onPress={() => this.setState({ showCamera: true })}
             title="Return to Scanner"
-            color="#841584"
+            color="#21a73b"
             accessibilityLabel="press this to return to the camera"
           />
           <Text>Type: {this.state.barcodeData.type}</Text>
           <Text>Data: {this.state.barcodeData.data}</Text>
-          <Text>{JSON.stringify(this.state.ingredients)}</Text>
-        </View>
+          {this._renderProductInfo()}
+        </ScrollView>
+      );
+    } else {
+      return (
+        <ScrollView>
+          <Button
+            onPress={() => this.setState({ showCamera: true })}
+            title="Return to Scanner"
+            color="#21a73b"
+            accessibilityLabel="press this to return to the camera"
+          />
+          <Text>Type: {this.state.barcodeData.type}</Text>
+          <Text>Data: {this.state.barcodeData.data}</Text>
+          <Text>Getting ingredients...</Text>
+        </ScrollView>
       );
     }
   }
@@ -67,13 +93,14 @@ class BarcodeScanner extends Component {
     axios.get(api + d.data).then((res) => {
       console.log(res);
       this.setState({
-        ingredients: res
+        productInfo: res.data
       });
     });
 
     this.setState({
       showCamera: false,
       barcodeData: d,
+      productInfo: null
     });
     console.log(d);
   }
