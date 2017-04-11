@@ -44,13 +44,13 @@ class Settings extends Component {
                 saved: [
                   ...self.state.saved.slice(0, i),
                   checked,
-                  ...self.state.saved.slice(i+1)
+                  ...self.state.saved.slice(i + 1)
                 ]
               });
               AsyncStorage.setItem('savedSettings', [
                 ...self.state.saved.slice(0, i),
                 checked,
-                ...self.state.saved.slice(i)
+                ...self.state.saved.slice(i + 1)
               ].toString())
             }}
           />
