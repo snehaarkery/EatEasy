@@ -4,7 +4,8 @@ import {
   Button,
   StyleSheet,
   Text,
-  View
+  View,
+  Image
 } from 'react-native';
 import { CheckboxGroup } from 'react-native-material-design';
 import { MKCheckbox } from 'react-native-material-kit';
@@ -15,6 +16,7 @@ class Settings extends Component {
 
     this.state = {
       saved: [ false, false, false ]
+	  
     };
 
     this._renderCheckboxes = this._renderCheckboxes.bind(this);
@@ -25,12 +27,16 @@ class Settings extends Component {
       this.setState({ saved: (value || '').split(',').map((val) => (val === 'true')) });
     }).done();
   }
+  
 
   _renderCheckboxes() {
     const options = [
-      { label: 'Vegetarian' },
       { label: 'Vegan' },
+      { label: 'Vegetarian' },
       { label: 'Nut Allergy' },
+	  {label: 'Sugar-free'},
+	  {label: 'Gluten-free'},
+	  {label: 'Lactose intolerance'},
     ];
 
     let self = this;
@@ -53,8 +59,7 @@ class Settings extends Component {
                 ...self.state.saved.slice(i + 1)
               ].toString())
             }}
-          />
-          <Text>{item.label}</Text>
+          /><Text style={styles.bodyfont}>{item.label}</Text>
         </View>
       );
     });
@@ -62,17 +67,69 @@ class Settings extends Component {
 
   render() {
     return (
-      <View>
-        <Button
+		<View style={styles.container}>
+		<Image
+		  style = {styles.container}
+          source={require('./background.jpg')}>
+		<Text>{'\n'}</Text>
+		<Image
+		  style = {styles.stretch}
+          source={require('./logo.png')}
+        />
+		<Text style ={styles.heading}>Select your dietary restrictions {'\n'}</Text>
+		  
+        {this._renderCheckboxes()}
+		<Text>{'\n'}{'\n'}{'\n'}</Text>
+		<Button
           onPress={() => this.props.changePage('SCANNER')}
           title="Return to Scanner"
-          color="#21a73b"
           accessibilityLabel="press this to return to the camera"
+		  color = '#556b2f'
         />
-        {this._renderCheckboxes()}
+		</Image>
       </View>
     );
   }
 }
 
+
 export default Settings;
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    width: undefined,
+    height: undefined,
+    backgroundColor:'transparent',
+       
+  },
+  heading: {
+    color: '#006400',
+	fontSize: 20,
+	fontFamily: 'Chalkduster',
+	fontWeight: 'bold',
+		
+  },
+  bodyfont: {
+    color: '#006400',
+	fontSize: 17,
+	fontFamily: 'Chalkduster',
+	fontWeight: 'bold',
+	
+  }, 
+  buttonstyle: {
+	color: 'white',
+    textAlign: 'center',
+    fontSize: 16,
+	width: 50,
+  },
+  stretch: {
+    width: 100,
+    height: 120,
+	resizeMode: 'contain',
+	alignItems: 'center',
+	justifyContent: 'center',
+	alignSelf: 'center',    
+  },
+});
