@@ -70,22 +70,21 @@ class Settings extends Component {
 		<View style={styles.container}>
 		<Image
 		  style = {styles.container}
-          source={require('./background.jpg')}>
+          source={require('./lemon.jpg')}>
+		<View style={{width: 300, height: 500, backgroundColor: '#f5f5f5', alignSelf: 'center', paddingTop:30, marginTop:60}} >	
+			<Text style ={styles.heading}>Select your dietary restrictions {'\n'}</Text>
+			<Text>{'\n'}</Text>  
+			{this._renderCheckboxes()}
+			<Text>{'\n'}{'\n'}{'\n'}</Text>
+		</View>
 		<Text>{'\n'}</Text>
-		<Image
-		  style = {styles.stretch}
-          source={require('./logo.png')}
-        />
-		<Text style ={styles.heading}>Select your dietary restrictions {'\n'}</Text>
-		  
-        {this._renderCheckboxes()}
-		<Text>{'\n'}{'\n'}{'\n'}</Text>
 		<Button
           onPress={() => this.props.changePage('SCANNER')}
           title="Return to Scanner"
           accessibilityLabel="press this to return to the camera"
-		  color = '#556b2f'
+		  color = '#32cd32'
         />
+		
 		</Image>
       </View>
     );
@@ -105,19 +104,27 @@ const styles = StyleSheet.create({
        
   },
   heading: {
-    color: '#006400',
+    color: '#32cd32',
 	fontSize: 20,
 	fontFamily: 'Chalkduster',
 	fontWeight: 'bold',
 		
   },
   bodyfont: {
-    color: '#006400',
+    color: '#32cd32',
 	fontSize: 17,
 	fontFamily: 'Chalkduster',
 	fontWeight: 'bold',
 	
   }, 
+  newimg:{
+	  width:300,
+	  height:650,
+	  resizeMode: 'center',
+	  alignItems: 'center',
+	  justifyContent: 'center',
+	  alignSelf: 'center',
+  },
   buttonstyle: {
 	color: 'white',
     textAlign: 'center',
@@ -125,8 +132,8 @@ const styles = StyleSheet.create({
 	width: 50,
   },
   stretch: {
-    width: 100,
-    height: 120,
+    width: 400,
+    height: 100,
 	resizeMode: 'contain',
 	alignItems: 'center',
 	justifyContent: 'center',
