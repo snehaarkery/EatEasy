@@ -15,6 +15,7 @@
     "react": "~15.4.1",
     "react-native": "0.42.3",
     "react-native-camera": "git+https://github.com/lwansbrough/react-native-camera.git",
+    "react-native-easy-grid": "^0.1.8",
     "react-native-material-design": "^0.3.7",
     "react-native-material-design-styles": "^0.2.6",
     "react-native-material-kit": "^0.4.1",
