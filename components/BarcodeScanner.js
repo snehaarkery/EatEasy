@@ -26,13 +26,17 @@ class BarcodeScanner extends Component {
     }
 
     this._onBarCodeRead = this._onBarCodeRead.bind(this);
-    this.renderCamera = this.renderCamera.bind(this);
+    this._renderAddToCartButton = this._renderAddToCartButton.bind(this);
     this._renderProductInfo = this._renderProductInfo.bind(this);
   }
 
   _renderProductInfo() {
     if (this.state.productInfo === 404) {
       return <Text>Product not found!</Text>
+    }
+
+    if (!this.state.productInfo) {
+      return (<Text>Getting ingredients...</Text>);
     }
 
     return Object.keys(this.state.productInfo.product.attributes)
@@ -43,7 +47,22 @@ class BarcodeScanner extends Component {
       });
   }
 
-  renderCamera() {
+  _renderAddToCartButton() {
+    if (this.state.productInfo) {
+      return (
+        <Button
+          onPress={() => this.props.addToCart(this.state.productInfo)}
+          title="Add to Cart"
+          color="#aaaaaa"
+          accessibilityLabel="press this to add the scanned item to your cart"
+        />
+      );
+    } else {
+      return null;
+    }
+  }
+
+  render() {
     if (this.state.showCamera) {
       return (
         <Camera
@@ -58,21 +77,13 @@ class BarcodeScanner extends Component {
             color="#21a73b"
             accessibilityLabel="press this to set your dietary restrictions"
           />
-        </Camera>
-      );
-    } else if (this.state.productInfo) {
-      return (
-        <ScrollView>
           <Button
-            onPress={() => this.setState({ showCamera: true })}
-            title="Return to Scanner"
-            color="#21a73b"
-            accessibilityLabel="press this to return to the camera"
+            onPress={() => this.props.changePage('CART')}
+            title="Go to Cart"
+            color="#219fa7"
+            accessibilityLabel="press this to go to your shopping cart"
           />
-          <Text>Type: {this.state.barcodeData.type}</Text>
-          <Text>Data: {this.state.barcodeData.data}</Text>
-          {this._renderProductInfo()}
-        </ScrollView>
+        </Camera>
       );
     } else {
       return (
@@ -85,16 +96,11 @@ class BarcodeScanner extends Component {
           />
           <Text>Type: {this.state.barcodeData.type}</Text>
           <Text>Data: {this.state.barcodeData.data}</Text>
-          <Text>Getting ingredients...</Text>
+          {this._renderProductInfo()}
+          {this._renderAddToCartButton()}
         </ScrollView>
       );
     }
-  }
-
-  render() {
-    return (
-      this.renderCamera()
-    );
   }
 
   _onBarCodeRead(d) {
