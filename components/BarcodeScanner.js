@@ -31,6 +31,10 @@ class BarcodeScanner extends Component {
   }
 
   _renderProductInfo() {
+    if (this.state.productInfo === 404) {
+      return <Text>Product not found!</Text>
+    }
+
     return Object.keys(this.state.productInfo.product.attributes)
       .map((key) => {
         return (
@@ -98,9 +102,15 @@ class BarcodeScanner extends Component {
 
     axios.get(api + d.data).then((res) => {
       console.log(res);
-      this.setState({
-        productInfo: res.data
-      });
+      if (+res.data.status.code === 404) {
+        this.setState({
+          productInfo: 404
+        });
+      } else {
+        this.setState({
+          productInfo: res.data
+        });
+      }
     });
 
     this.setState({
