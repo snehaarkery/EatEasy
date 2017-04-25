@@ -22,12 +22,14 @@ class BarcodeScanner extends Component {
         data: '',
         type: ''
       },
-      productInfo: null
+      productInfo: null,
+      isWithinDiet: null
     }
 
     this._onBarCodeRead = this._onBarCodeRead.bind(this);
     this._renderAddToCartButton = this._renderAddToCartButton.bind(this);
     this._renderProductInfo = this._renderProductInfo.bind(this);
+    this._renderWithinDiet = this._renderWithinDiet.bind(this);
   }
 
   _renderProductInfo() {
@@ -45,6 +47,18 @@ class BarcodeScanner extends Component {
           <Text key={key}>{key}: {this.state.productInfo.product.attributes[key]}</Text>
         );
       });
+  }
+
+  _renderWithinDiet() {
+    if (this.state.isWithinDiet === null) {
+      return (<Text>Checking if this item is within your diet...</Text>);
+    }
+
+    if (this.state.isWithinDiet) {
+      return (<Text>This item is within your diet!</Text>);
+    } else {
+      return (<Text>This item is NOT within your diet.</Text>);
+    }
   }
 
   _renderAddToCartButton() {
@@ -96,6 +110,7 @@ class BarcodeScanner extends Component {
           />
           <Text>Type: {this.state.barcodeData.type}</Text>
           <Text>Data: {this.state.barcodeData.data}</Text>
+          {this._renderWithinDiet()}
           {this._renderProductInfo()}
           {this._renderAddToCartButton()}
         </ScrollView>
@@ -116,13 +131,24 @@ class BarcodeScanner extends Component {
         this.setState({
           productInfo: res.data
         });
+
+        if (this.props.saved[2] && JSON.stringify(res.data).includes('peanut')) {
+          this.setState({
+            isWithinDiet: false
+          });
+        } else {
+          this.setState({
+            isWithinDiet: true
+          });
+        }
       }
     });
 
     this.setState({
       showCamera: false,
       barcodeData: d,
-      productInfo: null
+      productInfo: null,
+      isWithinDiet: null
     });
     console.log(d);
   }

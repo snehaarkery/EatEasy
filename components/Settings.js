@@ -15,24 +15,14 @@ class Settings extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      saved: [ false, false, false, false, false, false ]
-    };
-
     this._renderCheckboxes = this._renderCheckboxes.bind(this);
-  }
-
-  componentWillMount() {
-    AsyncStorage.getItem('savedSettings').then((value) => {
-      this.setState({ saved: (value || '').split(',').map((val) => (val === 'true')) });
-    }).done();
   }
 
   _renderCheckboxes() {
     const options = [
       { label: 'Vegan' },
       { label: 'Vegetarian' },
-      { label: 'Nut Allergy' },
+      { label: 'Peanut Allergy' },
   	  { label: 'Sugar-free' },
   	  { label: 'Gluten-free' },
   	  { label: 'Lactose Intolerance' },
@@ -44,21 +34,8 @@ class Settings extends Component {
         <Row key={i}>
           <Col size={1}>
             <MKCheckbox
-              checked={self.state.saved[i]}
-              onCheckedChange={({checked}) => {
-                self.setState({
-                  saved: [
-                    ...self.state.saved.slice(0, i),
-                    checked,
-                    ...self.state.saved.slice(i + 1)
-                  ]
-                });
-                AsyncStorage.setItem('savedSettings', [
-                  ...self.state.saved.slice(0, i),
-                  checked,
-                  ...self.state.saved.slice(i + 1)
-                ].toString())
-              }}
+              checked={self.props.saved[i]}
+              onCheckedChange={({checked}) => self.props.changeSettings(checked, i)}
             />
           </Col>
           <Col size={7}><Text style={styles.bodyfont}>{item.label}</Text></Col>
