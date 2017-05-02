@@ -13,6 +13,27 @@ import { Col, Row, Grid } from "react-native-easy-grid";
 class ShoppingCart extends Component {
   constructor(props) {
     super(props);
+
+    this._renderWithinDiet = this._renderWithinDiet.bind(this);
+  }
+
+  _renderWithinDiet() {
+    if (this.props.cart.length === 0) {
+      return (<Text>Your cart is empty.</Text>);
+    }
+
+    let totalItems = this.props.cart.length;
+    let numWithin = 0;
+
+    this.props.cart.forEach((item, index) => {
+      numWithin += item.isWithinDiet ? 1 : 0;
+    });
+
+    let percent = (numWithin / totalItems).toFixed(2) * 100;
+
+    return (
+      <Text>You are {percent}% following your dietary restrictions!</Text>
+    );
   }
 
   render() {
@@ -39,7 +60,7 @@ class ShoppingCart extends Component {
     if (mapped.length === 0)
       mapped = (
         <Row>
-          <Text>Your cart is empty. Scan some items to add them here.</Text>
+          <Text>Scan some items to add them here.</Text>
         </Row>
       );
 
@@ -51,6 +72,7 @@ class ShoppingCart extends Component {
           accessibilityLabel="press this to return to the camera"
           color = '#32cd32'
         />
+        {this._renderWithinDiet()}
         {mapped}
       </Grid>
     );

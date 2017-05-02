@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
   Button,
   Dimensions,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
@@ -43,12 +44,26 @@ class BarcodeScanner extends Component {
       return (<Text>Getting ingredients...</Text>);
     }
 
-    return Object.keys(this.state.productInfo)
-      .map((key) => {
-        return (
-          <Text key={key}>{key}: {JSON.stringify(this.state.productInfo[key])}</Text>
-        );
-      });
+    return (
+      <View style={{
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+        <Text>{this.state.productInfo.title}</Text>
+        {this.state.productInfo.images[0]
+          && <Image
+            style={{width: 250, height: 250}}
+            source={{uri: this.state.productInfo.images[0]}}
+          />}
+        <Text>{this.state.productInfo.generated_text}</Text>
+        <Text>Ingredients:</Text>
+        {this.state.productInfo.ingredients.map((ing, i) => {
+          return (
+            <Text key={i}>{ing.name}</Text>
+          );
+        })}
+      </View>
+    );
   }
 
   _renderWithinDiet() {
@@ -176,6 +191,10 @@ class BarcodeScanner extends Component {
       if (this.props.saved[i]) {
         if (!data.badges.includes(badges[i])) {
           this.setState({
+            productInfo: {
+              ...data,
+              isWithinDiet: false
+            },
             isWithinDiet: false
           });
           return;
@@ -184,6 +203,10 @@ class BarcodeScanner extends Component {
     }
 
     this.setState({
+      productInfo: {
+        ...data,
+        isWithinDiet: true
+      },
       isWithinDiet: true
     });
   }
