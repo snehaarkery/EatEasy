@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import Camera from 'react-native-camera';
+import { SPOONACULAR_MASHAPE_KEY } from '../private-api-keys';
 
 class BarcodeScanner extends Component {
   constructor(props) {
@@ -30,6 +31,7 @@ class BarcodeScanner extends Component {
     this._renderAddToCartButton = this._renderAddToCartButton.bind(this);
     this._renderProductInfo = this._renderProductInfo.bind(this);
     this._renderWithinDiet = this._renderWithinDiet.bind(this);
+    this._checkDiet = this._checkDiet.bind(this);
   }
 
   _renderProductInfo() {
@@ -41,10 +43,10 @@ class BarcodeScanner extends Component {
       return (<Text>Getting ingredients...</Text>);
     }
 
-    return Object.keys(this.state.productInfo.product.attributes)
+    return Object.keys(this.state.productInfo)
       .map((key) => {
         return (
-          <Text key={key}>{key}: {this.state.productInfo.product.attributes[key]}</Text>
+          <Text key={key}>{key}: {JSON.stringify(this.state.productInfo[key])}</Text>
         );
       });
   }
@@ -119,11 +121,26 @@ class BarcodeScanner extends Component {
   }
 
   _onBarCodeRead(d) {
-    const api = 'http://eandata.com/feed/?v=3&keycode=DF7419BC58E1ED96&mode=json&find='
+    if (d.type === 'EAN_13')
+      d.data = d.data.slice(1);
 
-    axios.get(api + d.data).then((res) => {
+    const EANDATA_API = 'http://eandata.com/feed/?v=3&keycode=DF7419BC58E1ED96&mode=json&find='  + d.data;
+    const NUTRITIONIX_API = 'https://api.nutritionix.com/v1_1/item?upc=' + d.data + '&appId=391cc446&appKey=1dec9dff56a3b80c029a1a6f896e092a';
+    const EDAMAM_API = 'https://api.edamam.com/api/nutrition-details?app_id=bec6d7ed&app_key=d80bb1a04afa8a2fdc743a70595b3069';
+    const FOOD_FACTS_API = 'https://api.foodfacts.com/ci/api/foodfacts/food_find_product_by_upc';
+    const SPOONACULAR_API = 'https://spoonacular-recipe-food-nutrition-v1.p.mashape.com/food/products/upc/' + d.data;
+
+    axios.get(SPOONACULAR_API, {
+      headers: {
+        'X-Mashape-Key': SPOONACULAR_MASHAPE_KEY,
+        'Accept': 'application/json'
+      }
+    }).then((res) => {
       console.log(res);
-      if (+res.data.status.code === 404) {
+
+      let ingredients = res.data.ingredients;
+
+      if (+res.status === 404) {
         this.setState({
           productInfo: 404
         });
@@ -132,15 +149,7 @@ class BarcodeScanner extends Component {
           productInfo: res.data
         });
 
-        if (this.props.saved[2] && JSON.stringify(res.data).includes('peanut')) {
-          this.setState({
-            isWithinDiet: false
-          });
-        } else {
-          this.setState({
-            isWithinDiet: true
-          });
-        }
+        this._checkDiet(res.data);
       }
     });
 
@@ -151,6 +160,32 @@ class BarcodeScanner extends Component {
       isWithinDiet: null
     });
     console.log(d);
+  }
+
+  _checkDiet(data) {
+    const badges = [
+      'vegan',
+      'vegetarian',
+      'peanut_free',
+      'sugar_free',
+      'gluten_free',
+      'dairy_free'
+    ];
+
+    for (let i = 0; i < 6; i++) {
+      if (this.props.saved[i]) {
+        if (!data.badges.includes(badges[i])) {
+          this.setState({
+            isWithinDiet: false
+          });
+          return;
+        }
+      }
+    }
+
+    this.setState({
+      isWithinDiet: true
+    });
   }
 }
 

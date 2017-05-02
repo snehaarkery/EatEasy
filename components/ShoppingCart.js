@@ -22,7 +22,7 @@ class ShoppingCart extends Component {
       return (
         <Row key={index}>
           <Col size={8}>
-            <Text>{item.product.attributes.product}</Text>
+            <Text>{item.title}</Text>
           </Col>
           <Col size={4}>
             <Button
