@@ -72,9 +72,9 @@ class BarcodeScanner extends Component {
     }
 
     if (this.state.isWithinDiet) {
-      return (<Text>This item is within your diet!</Text>);
+      return (<Text style={{ backgroundColor: '#00ff00', fontSize: 28 }}>This item is within your diet!</Text>);
     } else {
-      return (<Text>This item is NOT within your diet.</Text>);
+      return (<Text style={{ backgroundColor: '#ff0000', fontSize: 28 }}>This item is NOT within your diet.</Text>);
     }
   }
 
@@ -122,7 +122,7 @@ class BarcodeScanner extends Component {
           <Button
             onPress={() => this.setState({ showCamera: true })}
             title="Return to Scanner"
-            color="#21a73b"
+            color="#aaaaaa"
             accessibilityLabel="press this to return to the camera"
           />
           <Text>Type: {this.state.barcodeData.type}</Text>
